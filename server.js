@@ -83,74 +83,82 @@ mongoose.connect("mongodb://localhost/week18Populater", {
 });
 
 // Routes
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+// request("https://www.bbc.com", function(error, response, html) {
 
-request("https://www.bbc.com", function(error, response, html) {
+//   // Load the HTML into cheerio and save it to a variable
+//   // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
+//   var $ = cheerio.load(html);
 
-  // Load the HTML into cheerio and save it to a variable
-  // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
-  var $ = cheerio.load(html);
+//   // An empty array to save the data that we'll scrape
+//   var results = [];
 
-  // An empty array to save the data that we'll scrape
-  var results = [];
+//   // Select each element in the HTML body from which you want information.
+//   // NOTE: Cheerio selectors function similarly to jQuery's selectors,
+//   // but be sure to visit the package's npm page to see how it works
+//   $("a.media__link").each(function(i, element) {
 
-  // Select each element in the HTML body from which you want information.
-  // NOTE: Cheerio selectors function similarly to jQuery's selectors,
-  // but be sure to visit the package's npm page to see how it works
-  $("a.media__link").each(function(i, element) {
+//     // var link = $(element).children().attr("href");
+//     // var title = $(element).children().text();
 
-    // var link = $(element).children().attr("href");
-    // var title = $(element).children().text();
+//     var link = $(element).attr("href").trim();
+//     var title = $(element).text().trim();
 
-    var link = $(element).attr("href").trim();
-    var title = $(element).text().trim();
-
-    // Save these results in an object that we'll push into the results array we defined earlier
-    results.push({
-      title: title,
-      link: link
-    });
-  });
-
-  // Log the results once you've looped through each of the elements found with cheerio
-  console.log(results);
-});
-
-// // A GET route for scraping the echojs website
-// app.get("/scrape", function(req, res) {
-//   // First, we grab the body of the html with request
-//   axios.get("https://www.bbc.com/").then(function(response) {
-//     // Then, we load that into cheerio and save it to $ for a shorthand selector
-//     // var $ = cheerio.load(response.data);
-//      var $ = cheerio.load(html);
-
-//     // Now, we grab every h2 within an article tag, and do the following:
-//     $("article h2").each(function(i, element) {
-//       // Save an empty result object
-//       var result = {};
-
-//       // Add the text and href of every link, and save them as properties of the result object
-//       result.title = $(this)
-//         .children("a")
-//         .text();
-//       result.link = $(this)
-//         .children("a")
-//         .attr("href");
-
-//       // Create a new Article using the `result` object built from scraping
-//       db.Article
-//         .create(result)
-//         .then(function(dbArticle) {
-//           // If we were able to successfully scrape and save an Article, send a message to the client
-//           res.send("Scrape Complete");
-//         })
-//         .catch(function(err) {
-//           // If an error occurred, send it to the client
-//           res.json(err);
-//         });
+//     // Save these results in an object that we'll push into the results array we defined earlier
+//     results.push({
+//       title: title,
+//       link: link
 //     });
 //   });
+
+//   // Log the results once you've looped through each of the elements found with cheerio
+//   console.log(results);
 // });
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+// A GET route for scraping the echojs website
+app.get("/scrape", function(req, res) {
+  // First, we grab the body of the html with request
+  axios.get("https://www.bbc.com/").then(function(response) {
+    // Then, we load that into cheerio and save it to $ for a shorthand selector
+    // var $ = cheerio.load(response.data);
+     var $ = cheerio.load(html);
+
+    // Now, we grab every h2 within an article tag, and do the following:
+    $("a.media__link").each(function(i, element) {
+      // Save an empty result object
+      var result = [];
+
+      var link = $(element).attr("href").trim();
+			var title = $(element).text().trim();
+
+      // Add the text and href of every link, and save them as properties of the result object
+      result.title = $(this)
+        .children("a")
+        .text();
+      result.link = $(this)
+        .children("a")
+        .attr("href");
+
+      // Create a new Article using the `result` object built from scraping
+      db.Article
+        .create(result)
+        .then(function(dbArticle) {
+          // If we were able to successfully scrape and save an Article, send a message to the client
+          res.send("Scrape Complete");
+        })
+        .catch(function(err) {
+          // If an error occurred, send it to the client
+          res.json(err);
+        });
+    });
+  });
+  console.log(result);
+});
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 // Route for getting all Articles from the db
 app.get("/articles", function(req, res) {
