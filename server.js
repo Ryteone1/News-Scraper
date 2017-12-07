@@ -42,14 +42,12 @@
 //   console.log("App running on port " + PORT + "!");
 // });
 var request = require("request");
-
-
-
-
 var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
+
+// mongodb://heroku_fsv5zbwr:l0p62ige2dbaddf434fopo7ok5@ds133136.mlab.com:33136/heroku_fsv5zbwr
 
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
@@ -77,8 +75,11 @@ app.use(express.static("public"));
 
 // Set mongoose to leverage built in JavaScript ES6 Promises
 // Connect to the Mongo DB
+
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/newsScraper";
+
 mongoose.Promise = Promise;
-mongoose.connect("mongodb://localhost/newsScraper", {
+mongoose.connect(MONGODB_URI, {
   useMongoClient: true
 });
 
